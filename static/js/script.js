@@ -72,10 +72,3 @@ function fetchAlerts() {
             console.error("Error fetching alerts:", error);
         });
 }
-
-// Fetch alerts on page load and update every 60 seconds
-window.onload = function() {
-    fetchUpdates(); // Fetch weather data
-    fetchAlerts();  // Fetch alerts
-    setInterval(fetchAlerts, 60000);  // Refresh alerts every minute
-};

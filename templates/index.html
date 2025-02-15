@@ -8,21 +8,24 @@
 </head>
 <body>
 
-    <!-- Display Weather Alert if Available -->
-    <div id="alert-box" class="alert-container" style="display: none;">
-        <p id="scrolling-text">No active weather alerts.</p>
-    </div>
-
     <div>
-        <h1>Current Weather</h1>
+        <!-- Display Weather Alert if Available -->
+        <div id="alert-box" class="alert-container" style="display: none;">
+            <p id="scrolling-text">No active weather alerts.</p>
+        </div>
 
-        <p>Temperature: {{ temp }} °F</p>
-        <p>Humidity: {{ humidity }} %</p>
-        <p>Wind Speed: {{ wind_speed }} mph</p>
+        <div >
+            <h1>Current Weather</h1>
+
+            <p>Temperature: {{ temp }} °F</p>
+            <p>Humidity: {{ humidity }} %</p>
+            <p>Wind Speed: {{ wind_speed }} mph</p>
+        </div>
+
+        <!-- Additional weather details can go here -->
+    
     </div>
-
-    <!-- Additional weather details can go here -->
-
+    <audio id="background-music" autoplay></audio>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

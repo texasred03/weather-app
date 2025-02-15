@@ -75,7 +75,32 @@ function fetchAlerts() {
 
 // Fetch alerts on page load and update every 60 seconds
 window.onload = function() {
+    playRandomMusic(); 
     fetchUpdates(); // Fetch weather data
     fetchAlerts();  // Fetch alerts
-    setInterval(fetchAlerts, 60000);  // Refresh alerts every minute
+    setInterval(fetchAlerts, 60000 * 15);  // Refresh alerts every 15 minutes
 };
+
+function playRandomMusic() {
+    fetch('/music')
+        .then(response => response.json())
+        .then(data => {
+            if (data.music_files.length > 0) {
+                const randomIndex = Math.floor(Math.random() * data.music_files.length);
+                const musicFile = data.music_files[randomIndex];
+
+                const audioElement = document.getElementById('background-music');
+                audioElement.src = `/static/music/${musicFile}`;
+                audioElement.play();
+            }
+        })
+        .catch(error => console.error("Error fetching music files:", error));
+}
+
+// Play new song when the current one ends
+document.addEventListener('DOMContentLoaded', function() {
+    const audioElement = document.getElementById('background-music');
+    audioElement.addEventListener('ended', playRandomMusic);
+
+    playRandomMusic(); // Start music on page load
+});

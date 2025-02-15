@@ -1,14 +1,12 @@
-import os
+from flask import Flask, render_template, jsonify
 import requests
-from flask import Flask, render_template,jsonify, send_from_directory
-import json
-import threading
-import pygame
-import time
-import random
-from config import API_KEY, APPLICATION_KEY, DEVICE_ID, LATITUDE, LONGITUDE
+from config import API_KEY, APPLICATION_KEY, LATITUDE, LONGITUDE
+from music_routes import music_bp  # Import the music Blueprint
 
 app = Flask(__name__)
+
+# Register the music Blueprint
+app.register_blueprint(music_bp)
 
 # Function to fetch weather data from Ambient Weather API
 def fetch_weather_data():
@@ -43,19 +41,6 @@ def fetch_weather_alerts(lat, lon):
     except Exception as e:
         print(f"Error fetching alerts: {e}")
         return "Could not fetch alerts."
-
-# Directory for music files
-MUSIC_DIR = 'static/music/'
-
-@app.route('/music/<path:filename>')
-def serve_music(filename):
-    return send_from_directory(MUSIC_DIR, filename)
-
-@app.route('/music')
-def get_music():
-    music_files = [f for f in os.listdir(MUSIC_DIR) if f.endswith('.mp3')]
-    return jsonify({"music_files": music_files})
-
 
 @app.route('/weather')
 def get_weather():

@@ -81,21 +81,45 @@ window.onload = function() {
     setInterval(fetchAlerts, 60000 * 15);  // Refresh alerts every 15 minutes
 };
 
-function playRandomMusic() {
+let audioElement = new Audio(); // Create an audio object
+let musicFiles = []; // Store the list of songs
+
+// Fetch the music list from Flask
+function fetchMusicList() {
     fetch('/music')
         .then(response => response.json())
         .then(data => {
-            if (data.music_files.length > 0) {
-                const randomIndex = Math.floor(Math.random() * data.music_files.length);
-                const musicFile = data.music_files[randomIndex];
-
-                const audioElement = document.getElementById('background-music');
-                audioElement.src = `/static/music/${musicFile}`;
-                audioElement.play();
-            }
+            musicFiles = data.music_files;
         })
         .catch(error => console.error("Error fetching music files:", error));
 }
+
+// Play a random song from the list
+function playRandomMusic() {
+    if (musicFiles.length === 0) return; // No music files loaded
+
+    let randomIndex = Math.floor(Math.random() * musicFiles.length);
+    let musicFile = musicFiles[randomIndex];
+
+    audioElement.src = `/music/${encodeURIComponent(musicFile)}`;
+    audioElement.play().catch(error => console.error("Playback blocked:", error));
+}
+
+// When the song ends, play another
+audioElement.addEventListener("ended", playRandomMusic);
+
+// User must click to allow autoplay
+document.getElementById("play-music").addEventListener("click", function() {
+    if (musicFiles.length === 0) {
+        fetchMusicList();
+        setTimeout(playRandomMusic, 500); // Slight delay to ensure list loads
+    } else {
+        playRandomMusic();
+    }
+});
+
+// Load music list when the page loads
+document.addEventListener("DOMContentLoaded", fetchMusicList);
 
 // Play new song when the current one ends
 document.addEventListener('DOMContentLoaded', function() {

@@ -20,7 +20,8 @@ def fetch_weather_data():
 
         # Check if data is received successfully
         if weather_data:
-            print("Weather data fetched successfully:", json.dumps(weather_data, indent=4))
+            print("Weather data fetched successfully")
+            # print(json.dumps(weather_data, indent=4))
             return weather_data
         else:
             print("No weather data returned.")
@@ -48,7 +49,7 @@ MUSIC_DIR = 'static/music/'
 
 @app.route('/music/<path:filename>')
 def serve_music(filename):
-    return send_from_directory('static/music', filename)
+    return send_from_directory(MUSIC_DIR, filename)
 
 @app.route('/music')
 def get_music():

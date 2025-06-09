@@ -7,29 +7,27 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div id="header">
+        <p class="scrolling-text">Current weather for {{ city }}, {{ state}} </p>
+    </div>  
 
-    <div>
-        <!-- Display Weather Alert if Available -->
-        <div id="alert-box" class="alert-container" style="display: none;">
-            <p id="scrolling-text">No active weather alerts.</p>
-        </div>
-
-        <div >
-            <h1>Current Weather</h1>
-
-            <p>Temperature: {{ temp }} °F</p>
-            <p>Humidity: {{ humidity }} %</p>
-            <p>Wind Speed: {{ wind_speed }} mph</p>
-        </div>
-
-        <!-- Additional weather details can go here -->
-    
+    <div id="weather-container" >
+        <h1>Current Conditions</h1>
+        <p>Temperature: {{ temp }} °F</p>
+        <p>Humidity: {{ humidity }} %</p>
+        <p>Wind Speed: {{ wind_speed }} mph</p>
     </div>
-    <div>
+
+    <div id="footer">
+        <!-- Display Weather Alert if Available -->
+        <div id="alert-box" class="alert-container">
+            <p class="scrolling-text">No active weather alerts for {{ county }}</p>
+        </div>
         <!-- <button id="play-music">Play Music</button> // Comenting out
         <audio id="background-music"></audio> -->
     </div>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
     <!-- <script src="{{ url_for('static', filename='js/music.js') }}"></script> -->
 </body>
 </html>

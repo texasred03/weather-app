@@ -8,21 +8,18 @@ html, body {
 }
 
 #header {
-    border: 2px solid green;
     position: relative;
     width: 100%;
     height: 10%;
 }
 
 #footer {
-    border: 2px solid red;
     position: relative;
     width: 100%;
     height: 10%;
 }
 
 #weather-container {
-    border: 2px solid black;
     position: relative;
     width: 100%;
     height: 80%;

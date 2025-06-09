@@ -1,12 +1,12 @@
 from flask import Flask, render_template, jsonify
 import requests
 from config import API_KEY, APPLICATION_KEY, LATITUDE, LONGITUDE
-from music_routes import music_bp  # Import the music Blueprint
+# from music_routes import music_bp  # Import the music Blueprint
 
 app = Flask(__name__)
 
 # Register the music Blueprint
-app.register_blueprint(music_bp)
+# app.register_blueprint(music_bp) # commented out
 
 # Function to fetch weather data from Ambient Weather API
 def fetch_weather_data():

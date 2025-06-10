@@ -1,8 +1,5 @@
 // static/js/script.js
 
-let currentSegment = 0;
-const segments = document.querySelectorAll('.weather-segment');
-
 // Fetch the weather data from the Flask app (which fetches it from Ambient Weather)
 function fetchUpdates() {
     fetch('/weather')
@@ -40,7 +37,7 @@ setInterval(showNextSegment, 30000); // Change segment every 30 seconds
 
 // Function to update the scrolling text with new content
 function updateScrollingText(text) {
-    const scrollingTextElement = document.getElementById('scrolling-text');
+    const scrollingTextElement = document.getElementByClassName('scrolling-text');
     scrollingTextElement.textContent = text;
 }
 
@@ -58,8 +55,8 @@ function fetchAlerts() {
     fetch('/alerts')
         .then(response => response.json())
         .then(data => {
-            const alertDiv = document.getElementById('alert-box');
-            const scrollingTextElement = document.getElementById('scrolling-text');
+            const alertDiv = document.getElementByClassName('alert-box');
+            const scrollingTextElement = document.getElementByClassName('scrolling-text');
 
             if (data.alert && data.alert !== "No active weather alerts.") {
                 alertDiv.style.display = 'block';  // Show alert div

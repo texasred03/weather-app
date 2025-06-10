@@ -1,22 +1,28 @@
 /* static/css/style.css */
 
-body {
-    font-family: 'Century-Gothic';
-    background-color: #004b87;
-    color: white;
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    overflow-x: hidden; /* Prevents horizontal scroll */
+}
+
+#header {
+    position: relative;
+    width: 100%;
+    height: 10%;
+}
+
+#footer {
+    position: relative;
+    width: 100%;
+    height: 10%;
 }
 
 #weather-container {
     position: relative;
-    width: 80%;
+    width: 100%;
     height: 80%;
-    text-align: center;
 }
 
 .weather-box {
@@ -49,10 +55,8 @@ audio {
     box-sizing: border-box;
 }
 
-#scrolling-text {
-    display: inline-block;
-    padding-left: 100%;
-    animation: scrollText 15s linear infinite;
+.scrolling-text {
+    animation: scrollText 60s linear infinite;
 }
 
 @keyframes scrollText {
@@ -62,4 +66,8 @@ audio {
     to {
         transform: translateX(-100%);
     }
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }

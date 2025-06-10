@@ -56,12 +56,18 @@ def get_alerts():
 def index():
     weather_data = fetch_weather_data()
     if weather_data:
-        # Extract relevant data from the response
-        temp = weather_data[0]['lastData']['tempf']  # Example for temperature
-        humidity = weather_data[0]['lastData']['humidity']  # Example for humidity
-        wind_speed = weather_data[0]['lastData']['windspeedmph']  # Example for wind speed
+        
+        weather_station_id = weather_data[0]['info']['name']
+
+        temp = weather_data[0]['lastData']['tempf']  
+        humidity = weather_data[0]['lastData']['humidity']  
+        wind_speed = weather_data[0]['lastData']['windspeedmph'] 
         lat = weather_data[0]['info']['coords']['coords']['lat']
         long = weather_data[0]['info']['coords']['coords']['lon']
+
+        city = weather_data[0]['info']['coords']['address_components'][2]['long_name']
+        state =  weather_data[0]['info']['coords']['address_components'][4]['long_name']
+        county =  weather_data[0]['info']['coords']['address_components'][3]['long_name']
 
         # Fetch weather alert
         alert = fetch_weather_alerts(lat, long)
@@ -72,7 +78,7 @@ def index():
         print(f"Wind Speed: {wind_speed} mph")
 
         # Pass data to the template
-        return render_template('index.html', temp=temp, humidity=humidity, wind_speed=wind_speed, alert=alert)
+        return render_template('index.html', temp=temp, humidity=humidity, wind_speed=wind_speed, alert=alert, city=city, state=state, county=county)
     else:
         return "Weather data not available"
 

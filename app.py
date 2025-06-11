@@ -59,9 +59,12 @@ def index():
         
         weather_station_id = weather_data[0]['info']['name']
 
-        temp = weather_data[0]['lastData']['tempf']  
+        temp = weather_data[0]['lastData']['tempf']
+        feelsLike = weather_data[0]['lastData']['feelsLike']
         humidity = weather_data[0]['lastData']['humidity']  
         wind_speed = weather_data[0]['lastData']['windspeedmph'] 
+        pressure = weather_data[0]['lastData']['baromrelin']
+
         lat = weather_data[0]['info']['coords']['coords']['lat']
         long = weather_data[0]['info']['coords']['coords']['lon']
 
@@ -72,13 +75,9 @@ def index():
         # Fetch weather alert
         alert = fetch_weather_alerts(lat, long)
 
-        # Log the values to check if they are being extracted properly
-        print(f"Temperature: {temp}°F")
-        print(f"Humidity: {humidity}%")
-        print(f"Wind Speed: {wind_speed} mph")
-
         # Pass data to the template
-        return render_template('index.html', temp=temp, humidity=humidity, wind_speed=wind_speed, alert=alert, city=city, state=state, county=county)
+        return render_template('index.html', weather_station_id = weather_station_id, temp=temp, feelsLike = feelsLike, pressure = pressure,
+                                humidity=humidity, wind_speed=wind_speed, alert=alert, city=city, state=state, county=county)
     else:
         return "Weather data not available"
 

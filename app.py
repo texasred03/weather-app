@@ -30,6 +30,8 @@ def fetch_weather_data():
 
 def fetch_weather_alerts(lat, lon):
     nws_url = f"https://api.weather.gov/alerts/active?point={lat},{lon}"
+    print(f"Checking for alerts at " + nws_url)
+
     try:
         response = requests.get(nws_url, timeout=5)
         data = response.json()
@@ -37,7 +39,9 @@ def fetch_weather_alerts(lat, lon):
         if "features" in data and data["features"]:
             return data["features"][0]["properties"]["headline"]
         else:
+            print(f"No active weather alerts.")
             return "No active weather alerts."
+        
     except Exception as e:
         print(f"Error fetching alerts: {e}")
         return "Could not fetch alerts."

@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Display</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -12,15 +11,40 @@
     </div>  
 
     <div id="weather-container" >
-        <h1>Current Conditions</h1>
-        <p>Temperature: {{ temp }} °F</p>
-        <p>Humidity: {{ humidity }} %</p>
-        <p>Wind Speed: {{ wind_speed }} mph</p>
+        <table id="weather-table">
+            <tr>
+                <th>Current Temp: </th>
+                <th></th>
+                <th>{{ temp }} °F</th>
+            </tr>
+            <tr>
+                <th>Feels Like: </th>
+                <th></th>
+                <th>{{ feelsLike }} °F</th>
+            </tr>
+            <tr>
+                <th>Humidity: </th>
+                <th></th>
+                <th>{{ humidity }} %</th>
+            </tr>
+            <tr>
+                <th>Wind Speed: </th>
+                <th></th>
+                <th>{{ wind_speed }} MPH</th>
+            </tr>
+            <tr>
+                <th>Air Pressure: </th>
+                <th></th>
+                <th>{{ pressure }} inHg</th>
+            </tr>
+        </table>
     </div>
 
     <div id="footer">
-        <!-- Display Weather Alert if Available -->
-        <div id="alert-box" class="alert-container">
+        <div id="weather-footer">
+            
+        </div>
+        <div id="alert-box" class="alert-container" style="display: none">
             <p class="scrolling-text">No active weather alerts for {{ county }}, {{ state }}</p>
         </div>
         <!-- <button id="play-music">Play Music</button> // Comenting out

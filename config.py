@@ -1,7 +1,7 @@
 # config.py
 
-API_KEY = '65e36f1d14d448eb93cc6e6a596a771a5e5f66b5ca25430580bb0a216b5aa208'
-DEVICE_ID = '4C:EB:D6:1E:0B:12'
-APPLICATION_KEY = '5ed1946d264540699efd315438a17bdd868417f13da443ff8eb7352fa8302f72'
-LATITUDE = 35.199165
-LONGITUDE = -101.845276
+API_KEY = # API Key for your weather station
+DEVICE_ID = # MAC Address
+APPLICATION_KEY = # App key for your weather station
+LATITUDE = # Location LAT
+LONGITUDE = # Location LONG

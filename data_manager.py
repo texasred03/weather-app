@@ -156,18 +156,36 @@ class WeatherDataManager:
     def _fetch_alerts(self):
         if CONFIG["demo_mode"] or not HAS_REQUESTS:
             return
+        # Prefer nws_zone_id if set, fall back to nws_zone for backward compat
+        zone = CONFIG.get("nws_zone_id") or CONFIG.get("nws_zone", "")
+        if not zone:
+            print("Alerts: no nws_zone_id configured, skipping")
+            return
         try:
-            url = f"https://api.weather.gov/alerts/active/zone/{CONFIG['nws_zone']}"
-            r   = requests.get(url, timeout=10, headers={"User-Agent": "WeatherPi/1.0"})
+            url = f"https://api.weather.gov/alerts/active/zone/{zone}"
+            r   = requests.get(url, timeout=10, headers={
+                "User-Agent": "WeatherPi/1.0",
+                "Accept":     "application/geo+json",
+            })
+            r.raise_for_status()
             alerts = []
-            for f in r.json().get("features", [])[:3]:
-                p = f["properties"]
+            for feature in r.json().get("features", [])[:3]:
+                p = feature["properties"]
+                # Clean up description — replace escaped newlines with spaces
+                # for the ticker, but keep full text for the alerts page
+                desc = p.get("description", "") or ""
+                desc = desc.replace("\n\n", " | ").replace("\n", " ").strip()
                 alerts.append({
                     "event":       p.get("event", "ALERT"),
                     "headline":    p.get("headline", ""),
-                    "description": p.get("description", "")[:200],
+                    "description": desc,
+                    "severity":    p.get("severity", ""),
+                    "onset":       p.get("onset", ""),
+                    "ends":        p.get("ends", ""),
+                    "instruction": (p.get("instruction") or "").replace("\n", " ").strip(),
                 })
             with self.lock:
                 self.alerts = alerts
+            print(f"Alerts: {len(alerts)} active for zone {zone}")
         except Exception as e:
             print(f"Alerts fetch error: {e}")

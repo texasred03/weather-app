@@ -5,7 +5,6 @@ tkinter_app.py — Retro Weather Channel touchscreen display (Tkinter).
 import tkinter as tk
 from tkinter import font as tkfont
 import time
-import math
 import datetime
 import threading
 import io
@@ -23,7 +22,7 @@ try:
     HAS_RADAR = True
 except ImportError:
     HAS_RADAR = False
- 
+
 
 class RetroWeatherApp(tk.Tk):
     PAGES = ["current", "forecast", "radar_placeholder", "alerts", "almanac"]
@@ -55,18 +54,17 @@ class RetroWeatherApp(tk.Tk):
                 pass
 
         self._setup_fonts()
-        icon_loader.preload_all(size=64)
         self._build_layout(W, H)
+        # Icons must load AFTER Tk window exists — pass master so ImageTk can attach
+        icon_loader.preload_all(size=64, master=self)
 
         # Radar state
         self._radar_image    = None   # current Tkinter PhotoImage
         self._radar_label    = None   # timestamp string
         self._radar_error    = None   # error message if fetch failed
         self._radar_fetching = False  # True while a fetch is in progress
-
         if HAS_RADAR:
             self._fetch_radar_async()
-
         self._update()
 
     # ── Fonts ───────────────────────────────────
@@ -231,14 +229,8 @@ class RetroWeatherApp(tk.Tk):
                       font=self.f_huge, fill=tc, tags=tag)
         c.create_text(W//4, 145, text=f"FEELS LIKE {sval(st,'feelslike'):.1f}°",
                       font=self.f_small, fill=COLORS["text_dim"], tags=tag)
-        cond = self._condition_icon(st)
-        icon = icon_loader.get_icon(cond, size=64)
-        if icon:
-            self._current_icon = icon   # hold ref to prevent GC
-            c.create_image(W//4, 195, image=icon, tags=tag)
-        else:
-            c.create_text(W//4, 205, text=cond,
-                          font=self.f_large, fill=COLORS["accent_teal"], tags=tag)
+        c.create_text(W//4, 205, text=self._condition_icon(st),
+                      font=self.f_large, fill=COLORS["accent_teal"], tags=tag)
         c.create_text(W//4, 270, text=f"DEW PT  {sval(st,'dewpoint'):.1f}°F",
                       font=self.f_small, fill=COLORS["text_dim"], tags=tag)
         c.create_text(W//4, 292, text=f"HUMIDITY  {sval(st,'humidity'):.0f}%",
@@ -295,14 +287,7 @@ class RetroWeatherApp(tk.Tk):
             c.create_text(x, 50, text=day["day"],  font=self.f_label, fill=fg, tags=tag)
             c.create_text(x, 68, text=day["date"], font=self.f_tiny,
                           fill=COLORS["text_dim"], tags=tag)
-            fc_icon = icon_loader.get_icon(day["icon"], size=48)
-            if fc_icon:
-                if not hasattr(self, "_forecast_icons"):
-                    self._forecast_icons = {}
-                self._forecast_icons[i] = fc_icon   # hold ref
-                c.create_image(x, 110, image=fc_icon, tags=tag)
-            else:
-                c.create_text(x, 110, text=day["icon"], font=self.f_small, tags=tag)
+            c.create_text(x, 110, text=day["icon"], font=self.f_small, tags=tag)
 
             words = day["description"].split()
             line1 = " ".join(words[:2])
@@ -417,56 +402,87 @@ class RetroWeatherApp(tk.Tk):
         tag    = "content"
         alerts = data["alerts"]
 
-        c.create_line(10, 38, W-10, 38, fill=COLORS["accent_red"], width=2, tags=tag)
-
         if not alerts:
-            #print("DEBUG: RSS: ", data["rss"])
             c.create_text(W//2, 20, text="** LATEST HEADLINES **",
-                      font=self.f_med, fill=COLORS["accent_cyan"], tags=tag)
+                          font=self.f_med, fill=COLORS["accent_cyan"], tags=tag)
             c.create_line(10, 38, W-10, 38, fill=COLORS["accent_teal"], width=1, tags=tag)
 
-            headlines = data.get("rss", [])  # <-- depends on your data structure
-
+            headlines = data.get("rss", [])
             if not headlines:
                 c.create_text(W//2, H//2,
-                          text="NO HEADLINES AVAILABLE",
-                          font=self.f_small, fill=COLORS["text_dim"], tags=tag)
-                return 
+                              text="NO HEADLINES AVAILABLE",
+                              font=self.f_small, fill=COLORS["text_dim"], tags=tag)
+                return
 
             y = 60
-            for i, (source, text) in enumerate(headlines[:6]):
+            for source, text in headlines[:6]:
                 c.create_rectangle(10, y, W-10, y+60,
                                    fill=COLORS["bg_panel"], outline=COLORS["grid_line"], tags=tag)
-
                 c.create_text(20, y+12, text=source,
                               anchor="w", font=self.f_label,
                               fill=COLORS["accent_gold"], tags=tag)
-
-                c.create_text(20, y+32, text=text[:80],
+                c.create_text(20, y+32, text=text[:90],
                               anchor="w", font=self.f_tiny,
                               fill=COLORS["text_white"], tags=tag)
-
                 y += 70
-
             return
 
-        c.create_text(W//2, 20, text="** WEATHER ALERTS **", font=self.f_med, fill=COLORS["alert_text"], tags=tag)
+        # ── Active alerts ────────────────────────────
+        c.create_text(W//2, 16, text="** WEATHER ALERTS **",
+                      font=self.f_med, fill=COLORS["alert_text"], tags=tag)
+        c.create_line(10, 32, W-10, 32, fill=COLORS["accent_red"], width=2, tags=tag)
 
-        y = 55
-        for i, alert in enumerate(alerts[:3]):
-            bg = COLORS["alert_bg"] if i % 2 == 0 else "#6b0000"
-            c.create_rectangle(10, y, W-10, y+90,
-                               fill=bg, outline=COLORS["accent_red"], tags=tag)
-            c.create_text(20, y+12, text=f"! {alert['event']}",
-                          anchor="w", font=self.f_label,
-                          fill=COLORS["alert_text"], tags=tag)
-            c.create_text(20, y+32, text=alert.get("headline","")[:80],
-                          anchor="w", font=self.f_tiny,
-                          fill=COLORS["text_white"], tags=tag)
-            c.create_text(20, y+52, text=alert.get("description","")[:120],
-                          anchor="w", font=self.f_tiny,
+        # Show one alert at a time with full description
+        # Cycle through alerts based on time so they each get screen time
+        idx   = int(time.time() // 15) % len(alerts)
+        alert = alerts[idx]
+
+        # Alert count indicator
+        if len(alerts) > 1:
+            c.create_text(W - 12, 16,
+                          text=f"{idx+1}/{len(alerts)}",
+                          anchor="e", font=self.f_tiny,
                           fill=COLORS["text_dim"], tags=tag)
-            y += 100
+
+        # Event type header
+        c.create_rectangle(10, 38, W-10, 68,
+                           fill=COLORS["alert_bg"], outline=COLORS["accent_red"], tags=tag)
+        c.create_text(W//2, 53, text=f"! {alert['event'].upper()} !",
+                      font=self.f_label, fill=COLORS["alert_text"], tags=tag)
+
+        # Headline
+        headline = alert.get("headline", "")
+        c.create_text(W//2, 82, text=headline,
+                      font=self.f_tiny, fill=COLORS["text_white"],
+                      width=W-30, tags=tag)
+
+        # Description — word-wrapped to fill available space
+        desc = alert.get("description", "")
+        y = 108
+        line_w = W - 30
+        # Split on " | " (our cleaned separator) for natural breaks
+        parts = desc.split(" | ")
+        for part in parts:
+            if y > H - 30:
+                break
+            c.create_text(16, y, text=part,
+                          anchor="nw", font=self.f_tiny,
+                          fill=COLORS["text_dim"],
+                          width=line_w, tags=tag)
+            # Estimate lines used: ~chars per line at tiny font on this width
+            chars_per_line = line_w // 6
+            lines = max(1, (len(part) + chars_per_line - 1) // chars_per_line)
+            y += lines * 14 + 4
+
+        # Instruction if there's room
+        instruction = alert.get("instruction", "")
+        if instruction and y < H - 40:
+            c.create_line(10, y, W-10, y, fill=COLORS["grid_line"], tags=tag)
+            y += 6
+            c.create_text(16, y, text=instruction,
+                          anchor="nw", font=self.f_tiny,
+                          fill=COLORS["accent_gold"],
+                          width=line_w, tags=tag)
 
     # ── PAGE: Almanac ────────────────────────────
     def _draw_almanac(self, data):
@@ -528,8 +544,6 @@ class RetroWeatherApp(tk.Tk):
             self.page_index = (self.page_index + 1) % len(self.PAGES)
             self._draw_nav(self.W, self.NAV_H)
 
-
-
     # ── Main loop ────────────────────────────────
     def _update(self):
         if self.auto_rotate:
@@ -537,17 +551,18 @@ class RetroWeatherApp(tk.Tk):
                 self.page_index   = (self.page_index + 1) % len(self.PAGES)
                 self._last_rotate = time.time()
                 self._draw_nav(self.W, self.NAV_H)
- 
+
         data = self.data_mgr.get()
         self._draw_header()
         self._draw_page(data)
         self._refresh_ticker(data)
- 
+
         # Refresh radar image every 2 minutes when on radar page
         if HAS_RADAR and self.PAGES[self.page_index] == "radar_placeholder":
             last = getattr(self, "_radar_last_refresh", 0)
             if time.time() - last > 120:
                 self._radar_last_refresh = time.time()
                 self._fetch_radar_async()
- 
+
         self.after(1000, self._update)
+

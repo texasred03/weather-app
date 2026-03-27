@@ -14,6 +14,7 @@ CONFIG_DEFAULTS = {
     "location_name":     "YOUR CITY",
     "timezone":          "America/New_York",
     "nws_zone":          "NYZ072",
+    "nws_zone_id":       "TXZ017",   # e.g. TXZ017 for Randall County TX
     "nws_radar_station": "OKX",
     "fullscreen":        False,
     "screen_width":      800,

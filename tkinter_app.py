@@ -54,10 +54,9 @@ class RetroWeatherApp(tk.Tk):
                 pass
 
         self._setup_fonts()
-        self._build_layout(W, H)
-        # Icons must load AFTER Tk window exists — pass master so ImageTk can attach
         icon_loader.preload_all(size=64, master=self)
-
+        self._build_layout(W, H)
+        
         # Radar state
         self._radar_image    = None   # current Tkinter PhotoImage
         self._radar_label    = None   # timestamp string
@@ -229,8 +228,16 @@ class RetroWeatherApp(tk.Tk):
                       font=self.f_huge, fill=tc, tags=tag)
         c.create_text(W//4, 145, text=f"FEELS LIKE {sval(st,'feelslike'):.1f}°",
                       font=self.f_small, fill=COLORS["text_dim"], tags=tag)
-        c.create_text(W//4, 205, text=self._condition_icon(st),
-                      font=self.f_large, fill=COLORS["accent_teal"], tags=tag)
+        
+        cond = self._condition_icon(st)
+        icon = icon_loader.get_icon(cond, size=64)
+        if icon:
+            self._current_icon = icon   # hold ref to prevent GC
+            c.create_image(W//4, 195, image=icon, tags=tag)
+        else:
+            c.create_text(W//4, 205, text=cond,
+                          font=self.f_large, fill=COLORS["accent_teal"], tags=tag)
+            
         c.create_text(W//4, 270, text=f"DEW PT  {sval(st,'dewpoint'):.1f}°F",
                       font=self.f_small, fill=COLORS["text_dim"], tags=tag)
         c.create_text(W//4, 292, text=f"HUMIDITY  {sval(st,'humidity'):.0f}%",
@@ -287,7 +294,15 @@ class RetroWeatherApp(tk.Tk):
             c.create_text(x, 50, text=day["day"],  font=self.f_label, fill=fg, tags=tag)
             c.create_text(x, 68, text=day["date"], font=self.f_tiny,
                           fill=COLORS["text_dim"], tags=tag)
-            c.create_text(x, 110, text=day["icon"], font=self.f_small, tags=tag)
+            
+            fc_icon = icon_loader.get_icon(day["icon"], size=48)
+            if fc_icon:
+                if not hasattr(self, "_forecast_icons"):
+                    self._forecast_icons = {}
+                self._forecast_icons[i] = fc_icon   # hold ref
+                c.create_image(x, 110, image=fc_icon, tags=tag)
+            else:
+                c.create_text(x, 110, text=day["icon"], font=self.f_small, tags=tag)
 
             words = day["description"].split()
             line1 = " ".join(words[:2])

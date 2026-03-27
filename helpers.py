@@ -91,30 +91,13 @@ def build_ticker_segments(data, location_name):
     Build ticker as a list of (type, text) segments.
     Types: 'weather', 'label', 'news', 'alert', 'sep'
     """
-    st   = data["station"]
-    fc   = data["forecast"]
+    
     al   = data["alerts"]
-    news = data.get("news", [])
+    news = data.get("rss", [])
     sep  = ("sep", " · ")
-
-    segs = [
-        ("weather", f"  ***  {location_name.upper()}"),
-        sep,
-        ("weather", f"TEMP: {sval(st,'tempf'):.1f}°F"),
-        sep,
-        ("weather", f"HUMIDITY: {sval(st,'humidity'):.0f}%"),
-        sep,
-        ("weather", f"WIND: {sval(st,'windspeedmph'):.0f} MPH {wind_dir_label(sval(st,'winddir'))}"),
-        sep,
-        ("weather", f"BAROMETER: {sval(st,'baromrelin'):.2f}\" {baro_trend(sval(st,'baromrelin'))}"),
-    ]
-
-    for day in fc[:3]:
-        segs += [sep, ("weather",
-                       f"{day['day']}: {day['description'].upper()} "
-                       f"HI {day['high']}° LO {day['low']}°")]
-    segs.append(sep)
-
+    
+    segs = []
+    
     if al:
         for alert in al:
             segs += [

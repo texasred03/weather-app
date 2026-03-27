@@ -1,0 +1,31 @@
+{ 
+    "wu_api_key": "WEATHER_UNDERGROUND_API_KEY",
+    "wu_station_id": "WEATHER_UNDERGROUND_STATION_ID",
+
+    "latitude":          -3.42135,
+    "longitude":          66.60583,
+    "location_name":     "CITY",
+    "timezone":          "America/Chicago",
+
+    "nws_zone":          "NWS_ZONE",
+    "nws_radar_station": "NWS_RADAR_STATION",
+
+    "fullscreen":        true,
+    "screen_width":      1024,
+    "screen_height":     600,
+
+    "demo_mode":         false,
+    "web_enabled":       true,
+    "web_port":          5000,
+
+    "rss_feeds": [
+        ["APNEWS", "https://news.google.com/rss/search?q=site%3Aapnews.com&hl=en-US&gl=US&ceid=US%3Aen"],
+        ["REUTERS", "https://news.google.com/rss/search?q=site%3Areuters.com&hl=en-US&gl=US&ceid=US%3Aen"],
+        ["NPR",     "https://feeds.npr.org/1001/rss.xml"],
+        ["BBC",     "https://feeds.bbci.co.uk/news/rss.xml"],
+        ["NASA",    "https://www.nasa.gov/rss/dyn/breaking_news.rss"],
+        ["HACKERNEWS", "https://feeds.feedburner.com/TheHackersNews"]
+    ],
+    "rss_max_per_feed":  1,
+    "rss_refresh_sec":   600
+}
